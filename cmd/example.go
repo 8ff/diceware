@@ -1,8 +1,9 @@
 package main
 
 import (
-	"diceware"
 	"fmt"
+
+	"github.com/8ff/diceware"
 )
 
 func main() {

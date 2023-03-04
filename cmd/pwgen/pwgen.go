@@ -2,12 +2,13 @@ package main
 
 import (
 	"crypto/rand"
-	"diceware"
 	"fmt"
 	"math/big"
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/8ff/diceware"
 )
 
 func genRandRange(start int, end int) int {

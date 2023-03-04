@@ -1,5 +1,4 @@
 ![logo](media/dice.svg)
-
 # Diceware
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/8ff/diceware)](https://goreportcard.com/report/github.com/8ff/diceware)

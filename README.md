@@ -13,8 +13,34 @@ Diceware is a technique for generating strong, memorable passwords using dice to
 ## Diceware
 The `diceware` library provided in this project allows you to generate diceware passwords using Go. The library includes functions for generating a list of words, a randomised list of words, and a map of words that corresponds to each possible combination of dice rolls.
 
+### Example
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/8ff/diceware"
+)
+
+func main() {
+	// Get a slice of words
+	words := diceware.GetWords()
+	fmt.Println("Number of entries:", len(words))
+
+	// Get a randomised slice of words
+	randomWords := diceware.GetRandomWords()
+	fmt.Println("Number of entries in randomised list:", len(randomWords))
+
+	// Get a map of words
+	wordsMap := diceware.GetWordsMap()
+	fmt.Println("Number of entries in words map:", len(wordsMap))
+}
+```
+
 ## Pwgen
 The `pwgen` tool located in cmd/pwgen provided in this project allows you to generate diceware passwords using the command line.
+![pwgen demo](media/pwgen.gif)
 
 ## Generating passwords
 To generate a diceware password using the pwgen command-line tool, you can run the go run command followed by the path to the pwgen package and any options you want to use. By default, pwgen will generate a 6-word diceware password.
@@ -27,5 +53,3 @@ go run main.go -l 10
 ```
 
 The resulting password will be printed to the console.
-
-![pwgen demo](media/pwgen.gif)

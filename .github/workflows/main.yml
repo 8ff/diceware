@@ -25,8 +25,7 @@ jobs:
           go-version: ${{ matrix.go_version }}
       - name: Build Release
         run: |
-          GOOS=${{ matrix.goos }} GOARCH=${{ matrix.arch }} go build -o myapp-${{ matrix.goos }}-${{ matrix.arch }} myapp.go
-          tar -czf myapp-${{ matrix.goos }}-${{ matrix.arch }}.tar.gz myapp-${{ matrix.goos }}-${{ matrix.arch }}
+          cd cmd/pwgen GOOS=${{ matrix.goos }} GOARCH=${{ matrix.arch }} go build -o pwgen-${{ matrix.goos }}-${{ matrix.arch }} pwgen.go
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -47,6 +46,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./myapp-${{ matrix.goos }}-${{ matrix.arch }}.tar.gz
-          asset_name: myapp-${{ matrix.goos }}-${{ matrix.arch }}.tar.gz
+          asset_path: ./pwgen-${{ matrix.goos }}-${{ matrix.arch }}
+          asset_name: pwgen-${{ matrix.goos }}-${{ matrix.arch }}
           asset_content_type: application/gzip

@@ -4,6 +4,9 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/8ff/diceware)](https://goreportcard.com/report/github.com/8ff/diceware)
 [![GoDoc](https://godoc.org/github.com/8ff/diceware?status.svg)](https://godoc.org/github.com/8ff/diceware)
 [![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://raw.githubusercontent.com/8ff/diceware/master/LICENSE)
+[![Latest Release](https://img.shields.io/github/v/release/<username>/<repository>?include_prereleases&label=Latest%20Release)](https://github.com/<username>/<repository>/releases/latest)
+
+
 
 Diceware is a technique for generating strong, memorable passwords using dice to select words from a list. The Diceware method is based on the idea that each word in the list corresponds to a unique combination of five dice rolls, making it difficult for attackers to guess the password.
 
@@ -19,7 +22,8 @@ To generate a diceware password using the pwgen command-line tool, you can run t
 You can specify a different password length by using the -l or --length option followed by a number. For example, to generate a 10-word diceware password, you can run the following command:
 
 ```bash
-go run github.com/8ff/diceware/pwgen -l 10
+cd cmd/pwgen
+go run main.go -l 10
 ```
 
 The resulting password will be printed to the console.

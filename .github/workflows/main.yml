@@ -11,8 +11,8 @@ jobs:
     strategy:
       matrix:
         go_version: ['1.20']
-        os: [debian-latest, macos-latest]
-        arch: [amd64, arm64]
+        os: [debian-latest]
+        arch: [amd64]
         goos: [linux, darwin]
     steps:
       - name: Checkout code

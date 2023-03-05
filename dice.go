@@ -7804,7 +7804,7 @@ func GetRandomWords() []string {
 	return words
 }
 
-// Function that retuns a map of words from the RawList splitting it same wat as GetWords
+// Function that returns a map of words from the RawList splitting it same wat as GetWords
 func GetWordsMap() map[string]string {
 	words := map[string]string{}
 	lines := strings.Split(RawList, "\n")

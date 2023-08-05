@@ -1,51 +1,41 @@
-name: Build and Release Go Application
-
 on:
   push:
     branches:
-      - main
-
+      - master
+name: Build and Release
 jobs:
-  build:
-    name: Build release
+  build_and_release:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        go_version: ['*']
-        arch: [amd64]
-        goos: [linux, darwin]
     steps:
-      - name: Checkout code
+      - name: Checkout the repository
         uses: actions/checkout@v2
-      - name: Setup Go
+
+      - name: Set up Go
         uses: actions/setup-go@v2
         with:
-          go-version: ${{ matrix.go_version }}
-      - name: Build Release
-        run: |
-          GOOS=${{ matrix.goos }} GOARCH=${{ matrix.arch }} go build -o pwgen-${{ matrix.goos }}-${{ matrix.arch }} ./cmd/pwgen/pwgen.go
-      - name: Compress Binary
-        run: gzip pwgen-${{ matrix.goos }}-${{ matrix.arch }}
+          go-version: '*' # Use the latest stable version of Go
+
+      - name: Install dependencies
+        run: go mod download
+
+      - name: Build
+        run: cd cmd/pwgen; go build -v -o pwgen
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
-            Changes in this release:
-            * Latest release
+          tag_name: latest
+          release_name: Latest Release
           draft: false
           prerelease: false
-      - name: Upload Release Asset
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload the artifacts
+        uses: skx/github-action-publish-binaries@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./pwgen-${{ matrix.goos }}-${{ matrix.arch }}.gz
-          asset_name: pwgen-${{ matrix.goos }}-${{ matrix.arch }}.gz
-          asset_content_type: application/gzip
+          releaseId: ${{ steps.create_release.outputs.id }}
+          args: 'cmd/pwgen/pwgen'

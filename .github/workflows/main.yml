@@ -8,11 +8,10 @@ on:
 jobs:
   build:
     name: Build release
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        go_version: ['1.20']
-        os: [debian-latest]
+        go_version: ['*']
         arch: [amd64]
         goos: [linux, darwin]
     steps:
@@ -24,7 +23,9 @@ jobs:
           go-version: ${{ matrix.go_version }}
       - name: Build Release
         run: |
-          cd cmd/pwgen GOOS=${{ matrix.goos }} GOARCH=${{ matrix.arch }} go build -o pwgen-${{ matrix.goos }}-${{ matrix.arch }} pwgen.go
+          GOOS=${{ matrix.goos }} GOARCH=${{ matrix.arch }} go build -o pwgen-${{ matrix.goos }}-${{ matrix.arch }} ./cmd/pwgen/pwgen.go
+      - name: Compress Binary
+        run: gzip pwgen-${{ matrix.goos }}-${{ matrix.arch }}
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -35,7 +36,7 @@ jobs:
           release_name: Release ${{ github.ref }}
           body: |
             Changes in this release:
-            * Test release
+            * Latest release
           draft: false
           prerelease: false
       - name: Upload Release Asset
@@ -45,6 +46,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./pwgen-${{ matrix.goos }}-${{ matrix.arch }}
-          asset_name: pwgen-${{ matrix.goos }}-${{ matrix.arch }}
+          asset_path: ./pwgen-${{ matrix.goos }}-${{ matrix.arch }}.gz
+          asset_name: pwgen-${{ matrix.goos }}-${{ matrix.arch }}.gz
           asset_content_type: application/gzip

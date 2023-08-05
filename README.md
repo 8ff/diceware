@@ -4,7 +4,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/8ff/diceware)](https://goreportcard.com/report/github.com/8ff/diceware)
 [![GoDoc](https://godoc.org/github.com/8ff/diceware?status.svg)](https://godoc.org/github.com/8ff/diceware)
 [![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://raw.githubusercontent.com/8ff/diceware/master/LICENSE)
-[![Latest Release](https://img.shields.io/github/v/release/<username>/<repository>?include_prereleases&label=Latest%20Release)](https://github.com/<username>/<repository>/releases/latest)
+[![Latest Release](https://img.shields.io/github/v/release/<username>/<repository>?include_prereleases&label=Latest%20Release)](https://github.com/8ff/diceware/releases/latest)
 
 
 

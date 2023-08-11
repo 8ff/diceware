@@ -44,7 +44,7 @@ The `pwgen` tool located in cmd/pwgen provided in this project allows you to gen
 
 ### Installing pwgen
 ```bash
-curl -L https://github.com/8ff/diceware/releases/download/latest/pwgen.linux.amd64 -o pwgen && chmod +x pwgen
+repo="diceware"; name="pwgen"; os=$(uname | tr '[:upper:]' '[:lower:]'); arch=$(uname -m); case $arch in x86_64) arch="amd64" ;; arm64) arch="arm64" ;; esac; url="https://github.com/8ff/${repo}/releases/download/latest/${name}.${os}.${arch}"; curl -L $url -o ${name} && chmod +x ${name}
 ```
 
 ## Generating passwords

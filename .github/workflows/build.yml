@@ -28,7 +28,7 @@ jobs:
 
         - name: Build binaries
           run: |
-            binaryPrefix=${{ github.event.repository.name }}
+            binaryPrefix=pwgen
             cd cmd/pwgen
             GOOS=darwin GOARCH=arm64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${binaryPrefix}.darwin.arm64"
             GOOS=darwin GOARCH=amd64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${binaryPrefix}.darwin.amd64"

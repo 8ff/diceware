@@ -1,0 +1,49 @@
+on:
+    push:
+      branches:
+        - main
+name: Build and Release
+jobs:
+    build_and_release:
+      runs-on: ubuntu-latest
+      env: # Define environment variables here
+        TAG: latest
+        RELEASE_NAME: Latest release
+        RELEASE_BODY: Latest release
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      steps:
+        - name: Checkout the repository
+          uses: actions/checkout@v2
+  
+        - name: Set up Go
+          uses: actions/setup-go@v2
+          with:
+            go-version: '*' # Use the latest stable version of Go          
+
+        - name: Install dependencies
+          run: go mod download
+  
+        - name: Download releaseMaker
+          run: wget https://github.com/8ff/releaseMaker/releases/download/latest/releaseMaker.linux.amd64 -O /tmp/releaseMaker && chmod +x /tmp/releaseMaker
+
+        - name: Build binaries
+          run: |
+            binaryPrefix=${{ github.event.repository.name }}
+            GOOS=darwin GOARCH=arm64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "bin/${binaryPrefix}.darwin.arm64"
+            GOOS=darwin GOARCH=amd64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "bin/${binaryPrefix}.darwin.amd64"
+            GOOS=linux GOARCH=arm64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "bin/${binaryPrefix}.linux.arm64"
+            GOOS=linux GOARCH=amd64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "bin/${binaryPrefix}.linux.amd64"
+            GOOS=windows GOARCH=amd64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "bin/${binaryPrefix}.windows.amd64.exe"
+            GOOS=windows GOARCH=arm64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "bin/${binaryPrefix}.windows.arm64.exe"
+
+  
+        - name: Replace Existing Release
+          run: /tmp/releaseMaker replace ${{ github.repository }} ${{ env.TAG }} "${{ env.RELEASE_NAME }}" "${{ env.RELEASE_BODY }}"
+
+        - name: Upload the artifacts
+          run: |
+            cd bin
+            for file in *; do
+              /tmp/releaseMaker upload ${{ github.repository }} ${{ env.TAG }} $file $file
+            done
+  

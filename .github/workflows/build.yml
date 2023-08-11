@@ -28,26 +28,27 @@ jobs:
         run: wget https://github.com/8ff/releaseMaker/releases/download/latest/releaseMaker.linux.amd64 -O /tmp/releaseMaker && chmod +x /tmp/releaseMaker
       
       - name: Build Darwin ARM64 binary
-        working-directory: cd/pwgen
+        working-directory: cmd/pwgen
         run: GOOS=darwin GOARCH=arm64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.darwin.arm64"
       
       - name: Build Darwin AMD64 binary
-        working-directory: cd/pwgen
+        working-directory: cmd/pwgen
         run: GOOS=darwin GOARCH=amd64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.darwin.amd64"
       
       - name: Build Linux ARM64 binary
-        working-directory: cd/pwgen
+        working-directory: cmd/pwgen
         run: GOOS=linux GOARCH=arm64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.linux.arm64"
       
       - name: Build Linux AMD64 binary
-        working-directory: cd/pwgen
+        working-directory: cmd/pwgen
         run: GOOS=linux GOARCH=amd64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.linux.amd64"
 
       - name: Build Windows AMD64 binary
-        working-directory: cd/pwgen
+        working-directory: cmd/pwgen
         run: GOOS=windows GOARCH=amd64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.linux.amd64.exe"
 
       - name: Build Windows AMD64 binary
+        working-directory: cmd/pwgen
         run: GOOS=windows GOARCH=amd64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.linux.amd64.exe"
 
       - name: Replace Existing Release

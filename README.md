@@ -42,6 +42,11 @@ func main() {
 The `pwgen` tool located in cmd/pwgen provided in this project allows you to generate diceware passwords using the command line.
 ![pwgen demo](media/pwgen.gif)
 
+### Installing pwgen
+```bash
+curl -L https://github.com/8ff/diceware/releases/download/latest/pwgen.linux.amd64 -o pwgen && chmod +x pwgen
+```
+
 ## Generating passwords
 To generate a diceware password using the pwgen command-line tool, you can run the go run command followed by the path to the pwgen package and any options you want to use. By default, pwgen will generate a 6-word diceware password.
 

@@ -1,50 +1,61 @@
 on:
-    push:
-      branches:
-        - main
+  push:
+    branches:
+      - main
 name: Build and Release
 jobs:
-    build_and_release:
-      runs-on: ubuntu-latest
-      env: # Define environment variables here
-        TAG: latest
-        RELEASE_NAME: Latest release
-        RELEASE_BODY: Latest release
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      steps:
-        - name: Checkout the repository
-          uses: actions/checkout@v2
-  
-        - name: Set up Go
-          uses: actions/setup-go@v2
-          with:
-            go-version: '*' # Use the latest stable version of Go          
+  build_and_release:
+    runs-on: ubuntu-latest
+    env: # Define environment variables here
+      TAG: latest
+      RELEASE_NAME: Latest release
+      RELEASE_BODY: Latest release
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      BINARY_PREFIX: pwgen
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
 
-        - name: Install dependencies
-          run: go mod download
-  
-        - name: Download releaseMaker
-          run: wget https://github.com/8ff/releaseMaker/releases/download/latest/releaseMaker.linux.amd64 -O /tmp/releaseMaker && chmod +x /tmp/releaseMaker
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '*' # Use the latest stable version of Go          
 
-        - name: Build binaries
-          run: |
-            binaryPrefix=pwgen
-            cd cmd/pwgen
-            GOOS=darwin GOARCH=arm64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${binaryPrefix}.darwin.arm64"
-            GOOS=darwin GOARCH=amd64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${binaryPrefix}.darwin.amd64"
-            GOOS=linux GOARCH=arm64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${binaryPrefix}.linux.arm64"
-            GOOS=linux GOARCH=amd64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${binaryPrefix}.linux.amd64"
-            GOOS=windows GOARCH=amd64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${binaryPrefix}.windows.amd64.exe"
-            GOOS=windows GOARCH=arm64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${binaryPrefix}.windows.arm64.exe"
+      - name: Install dependencies
+        run: go mod download
 
-  
-        - name: Replace Existing Release
-          run: /tmp/releaseMaker replace ${{ github.repository }} ${{ env.TAG }} "${{ env.RELEASE_NAME }}" "${{ env.RELEASE_BODY }}"
+      - name: Download releaseMaker
+        run: wget https://github.com/8ff/releaseMaker/releases/download/latest/releaseMaker.linux.amd64 -O /tmp/releaseMaker && chmod +x /tmp/releaseMaker
+      
+      - name: Build Darwin ARM64 binary
+        working-directory: cd/pwgen
+        run: GOOS=darwin GOARCH=arm64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.darwin.arm64"
+      
+      - name: Build Darwin AMD64 binary
+        working-directory: cd/pwgen
+        run: GOOS=darwin GOARCH=amd64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.darwin.amd64"
+      
+      - name: Build Linux ARM64 binary
+        working-directory: cd/pwgen
+        run: GOOS=linux GOARCH=arm64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.linux.arm64"
+      
+      - name: Build Linux AMD64 binary
+        working-directory: cd/pwgen
+        run: GOOS=linux GOARCH=amd64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.linux.amd64"
 
-        - name: Upload the artifacts
-          run: |
-            cd /tmp/build/
-            for file in *; do
-              /tmp/releaseMaker upload ${{ github.repository }} ${{ env.TAG }} $file $file
-            done
-  
+      - name: Build Windows AMD64 binary
+        working-directory: cd/pwgen
+        run: GOOS=windows GOARCH=amd64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.linux.amd64.exe"
+
+      - name: Build Windows AMD64 binary
+        run: GOOS=windows GOARCH=amd64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.linux.amd64.exe"
+
+      - name: Replace Existing Release
+        run: /tmp/releaseMaker replace ${{ github.repository }} ${{ env.TAG }} "${{ env.RELEASE_NAME }}" "${{ env.RELEASE_BODY }}"
+
+      - name: Upload the artifacts
+        run: |
+          cd /tmp/build
+          for file in *; do
+            /tmp/releaseMaker upload ${{ github.repository }} ${{ env.TAG }} $file $file
+          done

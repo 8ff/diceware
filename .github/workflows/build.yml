@@ -29,12 +29,13 @@ jobs:
         - name: Build binaries
           run: |
             binaryPrefix=${{ github.event.repository.name }}
-            GOOS=darwin GOARCH=arm64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "bin/${binaryPrefix}.darwin.arm64"
-            GOOS=darwin GOARCH=amd64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "bin/${binaryPrefix}.darwin.amd64"
-            GOOS=linux GOARCH=arm64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "bin/${binaryPrefix}.linux.arm64"
-            GOOS=linux GOARCH=amd64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "bin/${binaryPrefix}.linux.amd64"
-            GOOS=windows GOARCH=amd64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "bin/${binaryPrefix}.windows.amd64.exe"
-            GOOS=windows GOARCH=arm64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "bin/${binaryPrefix}.windows.arm64.exe"
+            cd cmd/pwgen
+            GOOS=darwin GOARCH=arm64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${binaryPrefix}.darwin.arm64"
+            GOOS=darwin GOARCH=amd64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${binaryPrefix}.darwin.amd64"
+            GOOS=linux GOARCH=arm64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${binaryPrefix}.linux.arm64"
+            GOOS=linux GOARCH=amd64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${binaryPrefix}.linux.amd64"
+            GOOS=windows GOARCH=amd64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${binaryPrefix}.windows.amd64.exe"
+            GOOS=windows GOARCH=arm64 go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${binaryPrefix}.windows.arm64.exe"
 
   
         - name: Replace Existing Release
@@ -42,7 +43,7 @@ jobs:
 
         - name: Upload the artifacts
           run: |
-            cd bin
+            cd /tmp/build/
             for file in *; do
               /tmp/releaseMaker upload ${{ github.repository }} ${{ env.TAG }} $file $file
             done

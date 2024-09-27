@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      releaseNote:
+        description: 'Release Note'
+        required: false
+        default: 'Manual release'
 
 env:
   TAG: latest

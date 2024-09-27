@@ -14,8 +14,9 @@ on:
 env:
   TAG: latest
   RELEASE_NAME: Latest release
-  RELEASE_BODY: Latest release
   BINARY_PREFIX: pwgen
+  BUILD_DIR: build
+  SOURCE_DIR: ./cmd/pwgen
 
 jobs:
   build_and_release:
@@ -34,7 +35,7 @@ jobs:
 
       - name: Build binaries
         run: |
-          mkdir -p build
+          mkdir -p ${{ env.BUILD_DIR }}
           PLATFORMS=(
             "darwin/arm64"
             "darwin/amd64"
@@ -64,8 +65,16 @@ jobs:
               OUTPUT_NAME=$OUTPUT_NAME.exe
             fi
             echo "Building for $GOOS/$GOARCH..."
-            GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "build/$OUTPUT_NAME" ./cmd/pwgen
+            GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "${{ env.BUILD_DIR }}/$OUTPUT_NAME" ${{ env.SOURCE_DIR }}
           done
+
+      - name: Delete existing release
+        uses: dev-drprasad/delete-tag-and-release@v0.2.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.TAG }}
+          delete_release: true
 
       - name: Create Release
         id: create_release
@@ -75,20 +84,22 @@ jobs:
         with:
           tag_name: ${{ env.TAG }}
           release_name: ${{ env.RELEASE_NAME }}
-          body: ${{ env.RELEASE_BODY }}
+          body: ${{ github.event.inputs.releaseNote || 'Automated release' }}
           draft: false
           prerelease: false
 
       - name: Upload Release Assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: actions/github-script@v6
         with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs').promises;
             const path = require('path');
             
             const uploadUrl = '${{ steps.create_release.outputs.upload_url }}';
-            const buildDir = 'build';
+            const buildDir = '${{ env.BUILD_DIR }}';
             
             const files = await fs.readdir(buildDir);
             for (const file of files) {

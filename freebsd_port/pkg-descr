@@ -1,0 +1,4 @@
+Diceware is a command-line passphrase generator that uses a
+simple wordlist-based approach to create secure and memorable passphrases.
+By drawing random words from a dictionary, Diceware produces outputs that
+are both easy to remember and difficult to guess.

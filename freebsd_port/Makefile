@@ -1,5 +1,5 @@
 PORTNAME=	diceware
-DISTVERSION=	latest
+DISTVERSION=	v1.0.0
 CATEGORIES=	sysutils
 
 MAINTAINER=	chief@8ff.org
@@ -8,28 +8,17 @@ WWW=		https://github.com/8ff/diceware
 
 LICENSE=	MIT
 
+USES=		go:modules
 USE_GITHUB=	yes
 GH_ACCOUNT=	8ff
-GH_TAGNAME=	latest
 
-# The port only installs a single binary:
+GO_MODULE=	github.com/8ff/diceware
+GO_TARGET=	./cmd/pwgen
+
 PLIST_FILES=	bin/${PORTNAME}
 
-# Download and set up the latest Go, then build diceware.
-do-build:
-	@${MKDIR} ${WRKDIR}/gobin
-	@cd ${WRKDIR} && \
-		${FETCH_CMD} -o go.json https://go.dev/dl/?mode=json && \
-		LATEST_GO=$$(grep -m1 '"version"' go.json | ${CUT} -d'"' -f4 | ${TR} -d 'go') && \
-		${FETCH_CMD} https://go.dev/dl/go$${LATEST_GO}.freebsd-amd64.tar.gz && \
-		${TAR} xf go$${LATEST_GO}.freebsd-amd64.tar.gz
-	@cd ${WRKSRC}/cmd/pwgen && \
-		${SETENV} \
-		PATH=${WRKDIR}/go/bin:${PATH} \
-		GOROOT=${WRKDIR}/go \
-		go build -o ${WRKDIR}/${PORTNAME} .
-
+# Rename binary from pwgen to diceware when installing
 do-install:
-	${INSTALL_PROGRAM} ${WRKDIR}/${PORTNAME} ${STAGEDIR}${PREFIX}/bin
+	${INSTALL_PROGRAM} ${WRKDIR}/bin/pwgen ${STAGEDIR}${PREFIX}/bin/${PORTNAME}
 
 .include <bsd.port.mk>

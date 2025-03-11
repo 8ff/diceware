@@ -1,27 +1,31 @@
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*'  # This will trigger on any tag that starts with 'v', like v1.0.0
 name: Build and Release
 jobs:
   build_and_release:
     runs-on: ubuntu-latest
     env: # Define environment variables here
-      TAG: latest
-      RELEASE_NAME: Latest release
-      RELEASE_BODY: Latest release
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       BINARY_PREFIX: pwgem
       SOURCE_PATH: cmd/pwgen
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v2
+        
+      - name: Get the tag name
+        id: get_tag
+        run: echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+        
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
           go-version: '*' # Use the latest stable version of Go          
+          
       - name: Install dependencies
         run: go mod download
+        
       - name: Download releaseMaker
         run: wget https://github.com/8ff/releaseMaker/releases/download/latest/releaseMaker.linux.amd64 -O /tmp/releaseMaker && chmod +x /tmp/releaseMaker
       
@@ -30,94 +34,94 @@ jobs:
         env:
           OS: darwin
           ARCH: arm64
-        run: GOOS=$OS GOARCH=$ARCH go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.$OS.$ARCH"
+        run: GOOS=$OS GOARCH=$ARCH go build -ldflags "-X 'main.Version=${{ env.TAG }}-$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.$OS.$ARCH"
       
       - name: Build Darwin AMD64 binary
         working-directory: ${{ env.SOURCE_PATH }}
         env:
           OS: darwin
           ARCH: amd64
-        run: GOOS=$OS GOARCH=$ARCH go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.$OS.$ARCH"
+        run: GOOS=$OS GOARCH=$ARCH go build -ldflags "-X 'main.Version=${{ env.TAG }}-$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.$OS.$ARCH"
       
       - name: Build Linux ARM64 binary
         working-directory: ${{ env.SOURCE_PATH }}
         env:
           OS: linux
           ARCH: arm64
-        run: GOOS=$OS GOARCH=$ARCH go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.$OS.$ARCH"
+        run: GOOS=$OS GOARCH=$ARCH go build -ldflags "-X 'main.Version=${{ env.TAG }}-$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.$OS.$ARCH"
       
       - name: Build Linux AMD64 binary
         working-directory: ${{ env.SOURCE_PATH }}
         env:
           OS: linux
           ARCH: amd64
-        run: GOOS=$OS GOARCH=$ARCH go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.$OS.$ARCH"
+        run: GOOS=$OS GOARCH=$ARCH go build -ldflags "-X 'main.Version=${{ env.TAG }}-$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.$OS.$ARCH"
 
       - name: Build Windows AMD64 binary
         working-directory: ${{ env.SOURCE_PATH }}
         env:
           OS: windows
           ARCH: amd64
-        run: GOOS=$OS GOARCH=$ARCH go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.$OS.$ARCH.exe"
+        run: GOOS=$OS GOARCH=$ARCH go build -ldflags "-X 'main.Version=${{ env.TAG }}-$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.$OS.$ARCH.exe"
 
       - name: Build Windows ARM64 binary
         working-directory: ${{ env.SOURCE_PATH }}
         env:
           OS: windows
           ARCH: arm64
-        run: GOOS=$OS GOARCH=$ARCH go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.$OS.$ARCH.exe"
+        run: GOOS=$OS GOARCH=$ARCH go build -ldflags "-X 'main.Version=${{ env.TAG }}-$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.$OS.$ARCH.exe"
 
       - name: Build OpenBSD AMD64 binary
         working-directory: ${{ env.SOURCE_PATH }}
         env:
           OS: openbsd
           ARCH: amd64
-        run: GOOS=$OS GOARCH=$ARCH go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.$OS.$ARCH"
+        run: GOOS=$OS GOARCH=$ARCH go build -ldflags "-X 'main.Version=${{ env.TAG }}-$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.$OS.$ARCH"
 
       - name: Build OpenBSD ARM64 binary
         working-directory: ${{ env.SOURCE_PATH }}
         env:
           OS: openbsd
           ARCH: arm64
-        run: GOOS=$OS GOARCH=$ARCH go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.$OS.$ARCH"
+        run: GOOS=$OS GOARCH=$ARCH go build -ldflags "-X 'main.Version=${{ env.TAG }}-$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.$OS.$ARCH"
 
       - name: Build FreeBSD AMD64 binary
         working-directory: ${{ env.SOURCE_PATH }}
         env:
           OS: freebsd
           ARCH: amd64
-        run: GOOS=$OS GOARCH=$ARCH go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.$OS.$ARCH"
+        run: GOOS=$OS GOARCH=$ARCH go build -ldflags "-X 'main.Version=${{ env.TAG }}-$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.$OS.$ARCH"
 
       - name: Build FreeBSD ARM64 binary
         working-directory: ${{ env.SOURCE_PATH }}
         env:
           OS: freebsd
           ARCH: arm64
-        run: GOOS=$OS GOARCH=$ARCH go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.$OS.$ARCH"
+        run: GOOS=$OS GOARCH=$ARCH go build -ldflags "-X 'main.Version=${{ env.TAG }}-$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.$OS.$ARCH"
 
       - name: Build NetBSD AMD64 binary
         working-directory: ${{ env.SOURCE_PATH }}
         env:
           OS: netbsd
           ARCH: amd64
-        run: GOOS=$OS GOARCH=$ARCH go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.$OS.$ARCH"
+        run: GOOS=$OS GOARCH=$ARCH go build -ldflags "-X 'main.Version=${{ env.TAG }}-$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.$OS.$ARCH"
 
       - name: Build NetBSD ARM64 binary
         working-directory: ${{ env.SOURCE_PATH }}
         env:
           OS: netbsd
           ARCH: arm64
-        run: GOOS=$OS GOARCH=$ARCH go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.$OS.$ARCH"
+        run: GOOS=$OS GOARCH=$ARCH go build -ldflags "-X 'main.Version=${{ env.TAG }}-$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.$OS.$ARCH"
 
       - name: Build DragonFly BSD AMD64 binary
         working-directory: ${{ env.SOURCE_PATH }}
         env:
           OS: dragonfly
           ARCH: amd64
-        run: GOOS=$OS GOARCH=$ARCH go build -ldflags "-X 'main.Version=$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.$OS.$ARCH"
+        run: GOOS=$OS GOARCH=$ARCH go build -ldflags "-X 'main.Version=${{ env.TAG }}-$(date +'%Y-%m-%d_%H:%M:%S')'" -o "/tmp/build/${{ env.BINARY_PREFIX }}.$OS.$ARCH"
 
-      - name: Replace Existing Release
-        run: /tmp/releaseMaker replace ${{ github.repository }} ${{ env.TAG }} "${{ env.RELEASE_NAME }}" "${{ env.RELEASE_BODY }}"
+      - name: Create Release
+        run: /tmp/releaseMaker replace ${{ github.repository }} ${{ env.TAG }} "Release ${{ env.TAG }}" "Release ${{ env.TAG }} created on $(date +'%Y-%m-%d')"
 
       - name: Upload the artifacts
         run: |

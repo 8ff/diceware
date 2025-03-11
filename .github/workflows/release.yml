@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     env: # Define environment variables here
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      BINARY_PREFIX: pwgem
+      BINARY_PREFIX: pwgen
       SOURCE_PATH: cmd/pwgen
     steps:
       - name: Checkout the repository
